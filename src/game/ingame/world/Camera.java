@@ -26,22 +26,18 @@ public class Camera extends GameObject {
 		int dWidth = handler.getGame().getWidth();
 		int dHeight = handler.getGame().getHeight();
 
-		if (cameraLocked)
+		// debug
+		cameraLocked = false;
+
+		if (cameraLocked) {
 			// update viewArea
 			viewArea = new Rectangle(dWidth / 2 - viewAreaSize / 2, dHeight / 2 - viewAreaSize / 2, viewAreaSize,
 					viewAreaSize);
-		// calc xoffset
-
-		if (handler.getMouseManager().currentPos.x > handler.getGame().getWidth() / 2) {
-			// move right
-			cameraLocked = false;
 		}
-
 	}
 
 	@Override
 	public void render(Graphics g) {
-		tick();
 		if (viewArea != null) {
 			// debug render
 			g.drawRect(viewArea.x, viewArea.y, viewArea.width, viewArea.height);

@@ -45,6 +45,7 @@ public class World extends GameObject {
 	public void tick() throws Exception {
 		for (int i = 0; i < tiles.size(); i++)
 			tiles.get(i).tick();
+		camera.tick();
 		super.tick();
 	}
 
