@@ -16,11 +16,16 @@ public class Resource {
 	public Resource(String name, File f) throws IOException {
 		this.name = name;
 		this.file = f;
-		
+
 		// check if image
 		String fileName = f.getName();
-		if(fileName.toLowerCase().endsWith(".png") || fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg")) {
-			image = Utils.loadImage(f);
+		if (fileName.toLowerCase().endsWith(".png") || fileName.toLowerCase().endsWith(".jpg") || fileName.toLowerCase().endsWith(".jpeg")) {
+			try {
+				image = Utils.loadImage(f);
+			} catch (Exception e) {
+				System.out.println("Can't load file: " + f);
+				throw e;
+			}
 		}
 	}
 

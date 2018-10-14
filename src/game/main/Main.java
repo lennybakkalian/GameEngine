@@ -12,7 +12,8 @@ public class Main {
 		boolean fullscreen = false;
 		
 		Game g = new Game("", width, height, fullscreen);
-		g.RESOURCE_PATH = new File("C:\\Users\\lenny\\Desktop\\2D_GameEngine\\GameAssets");
+		//g.RESOURCE_PATH = new File("C:\\Users\\lenny\\Desktop\\2D_GameEngine\\GameAssets");
+		g.RESOURCE_PATH = new File("./assets");
 		g.debug = false;
 		g.start();
 	}

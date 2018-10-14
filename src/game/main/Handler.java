@@ -1,5 +1,6 @@
 package game.main;
 
+import game.ingame.world.EntityManager;
 import game.ingame.world.World;
 import game.managers.KeyManager;
 import game.managers.MouseManager;
@@ -22,11 +23,23 @@ public class Handler {
 	public World getWorld() {
 		return world;
 	}
-	
+
 	public void setWorld(World world) {
 		this.world = world;
 	}
 
+	public int getMouseX() {
+		return getMouseManager().currentPos.x;
+	}
+
+	public int getMouseY() {
+		return getMouseManager().currentPos.y;
+	}
+	
+	public EntityManager getEntityManager() {
+		return getWorld().getEntityManager();
+	}
+	
 	public Resource getResource(String name) {
 		Resource res = game.getResources().getByName(name);
 		if (res == null) {

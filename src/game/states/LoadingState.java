@@ -34,6 +34,9 @@ public class LoadingState extends State {
 		btn2.addAnimation(AnimationType.ON_HOVER, new UIAnimation(30, new Rectangle(60, 60, 170, 90), Color.RED));
 		btn2.addAnimation(AnimationType.ON_HOVER_LEAVE,
 				new UIAnimation(30, new Rectangle(70, 70, 150, 70), Color.GREEN));
+		
+		
+		
 	}
 
 	@Override

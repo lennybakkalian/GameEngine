@@ -10,10 +10,12 @@ public class World extends GameObject {
 
 	private ArrayList<Tile> tiles;
 	private Camera camera;
+	private EntityManager entityManager;
 
 	public World(Handler handler, ArrayList<Tile> tiles) {
 		super(handler);
 		this.tiles = tiles;
+		this.entityManager = new EntityManager(handler);
 
 		// add default camera
 		setCamera(new Camera(handler, null));
@@ -23,6 +25,10 @@ public class World extends GameObject {
 			t.setX(t.getX() * t.getWidth());
 			t.setY(t.getY() * t.getHeight());
 		}
+	}
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
 	public void setCamera(Camera camera) {
@@ -37,14 +43,16 @@ public class World extends GameObject {
 	public void render(Graphics g) {
 		for (int i = 0; i < tiles.size(); i++)
 			tiles.get(i).render(g);
+		entityManager.render(g);
 		camera.render(g);
 		super.render(g);
 	}
-	
+
 	@Override
 	public void tick() throws Exception {
 		for (int i = 0; i < tiles.size(); i++)
 			tiles.get(i).tick();
+		entityManager.tick();
 		camera.tick();
 		super.tick();
 	}
