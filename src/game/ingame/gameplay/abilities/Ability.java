@@ -12,13 +12,15 @@ public class Ability extends WorldObject {
 	private float cooldown;
 	private Long lastUse = 0L;
 	private Resource inventarSplashArt;
+	private Entity source;
 
-	public Ability(Handler handler, float cooldown) {
+	public Ability(Handler handler, float cooldown, Entity source) {
 		super(handler);
 		this.cooldown = cooldown;
+		this.source = source;
 	}
 
-	public void use(Entity source) {
+	public void use() {
 		if (cooldown <= 0L) {
 			
 		}
