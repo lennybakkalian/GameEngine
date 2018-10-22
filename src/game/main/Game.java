@@ -1,8 +1,12 @@
 package game.main;
 
+import java.awt.AWTException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Robot;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
@@ -28,6 +32,8 @@ public class Game implements Runnable {
 	private State state;
 	private Display display;
 	private Handler handler;
+	public int moveCameraOffset = 40;
+	public int cameraSpeed = 2;
 
 	private BufferStrategy bs;
 	private Graphics g;
@@ -41,6 +47,8 @@ public class Game implements Runnable {
 
 	public UIHandler currentUIHandler;
 
+	public Robot robot;
+
 	public Game(String title, int width, int height, boolean fullscreen) {
 		this.title = title;
 		this.width = width;
@@ -49,6 +57,13 @@ public class Game implements Runnable {
 		this.handler = new Handler(this);
 		this.mouseManager = new MouseManager(handler);
 		this.keyManager = new KeyManager(handler);
+		try {
+			this.robot = new Robot();
+		} catch (AWTException e) {
+			e.printStackTrace();
+			System.out.println("cant create new Robot() in Game.java class");
+			System.exit(0);
+		}
 	}
 
 	public void init() throws IOException {
@@ -89,6 +104,11 @@ public class Game implements Runnable {
 		state = new LoadingState(handler);
 	}
 
+	public Rectangle getFrameRect() {
+		return new Rectangle(display.getFrame().getLocation().x, display.getFrame().getLocation().y,
+				display.getFrame().getWidth(), display.getFrame().getHeight());
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -112,12 +132,11 @@ public class Game implements Runnable {
 		mouseManager.tick();
 		keyManager.tick();
 
-		Handler.debugInfoList.put(1,
-				"Res " + width + "x" + height + "   mouse " + handler.getMouseX() + "x" + handler.getMouseY() + "   active:" + handler.getMouseManager().mouseSeen);
-		Handler.debugInfoList.put(2,"camera " + 
-				handler.getWorld().getCamera().getxOffset() + "x" + handler.getWorld().getCamera().getyOffset());
-		Handler.debugInfoList.put(3,"entities " + handler.getWorld().getEntityManager().getEntities().size());
-		
+		Handler.debugInfoList.put(1, "Res " + width + "x" + height + "   mouse " + handler.getMouseX() + "x"
+				+ handler.getMouseY() + "   active:" + handler.getMouseManager().mouseSeen);
+		Handler.debugInfoList.put(2, "camera " + handler.getWorld().getCamera().getxOffset() + "x"
+				+ handler.getWorld().getCamera().getyOffset());
+		Handler.debugInfoList.put(3, "entities " + handler.getWorld().getEntityManager().getEntities().size());
 	}
 
 	public void render() {
@@ -131,7 +150,9 @@ public class Game implements Runnable {
 		// g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-
+		// g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+		// RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.clearRect(0, 0, width, height);
 
 		try {

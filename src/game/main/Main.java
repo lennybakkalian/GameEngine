@@ -1,5 +1,8 @@
 package game.main;
 
+import java.awt.DefaultKeyboardFocusManager;
+import java.awt.KeyEventPostProcessor;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 public class Main {
@@ -16,6 +19,8 @@ public class Main {
 		g.RESOURCE_PATH = new File("./assets");
 		g.debug = false;
 		g.start();
+		
+		
 	}
 
 }

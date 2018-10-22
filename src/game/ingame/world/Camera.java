@@ -1,6 +1,7 @@
 package game.ingame.world;
 
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Robot;
 
@@ -21,11 +22,11 @@ public class Camera extends GameObject {
 		this.handler = handler;
 		this.focusedElement = focusedElement;
 	}
-	
+
 	public int calcXRenderPos(int xWorld) {
 		return xWorld - xOffset;
 	}
-	
+
 	public int calcYRenderPos(int yWorld) {
 		return yWorld - yOffset;
 	}
@@ -43,14 +44,43 @@ public class Camera extends GameObject {
 			viewArea = new Rectangle(dWidth / 2 - viewAreaSize / 2, dHeight / 2 - viewAreaSize / 2, viewAreaSize,
 					viewAreaSize);
 		} else {
-			if(handler.getMouseX() <= 5 && handler.getMouseManager().mouseSeen)
-				xOffset--;
-			if(handler.getMouseX() >= handler.getGame().getWidth() - 5 && handler.getMouseManager().mouseSeen)
-				xOffset++;
-			if(handler.getMouseY() <= 5 && handler.getMouseManager().mouseSeen)
-				yOffset--;
-			if(handler.getMouseY() >= handler.getGame().getHeight() - 5 && handler.getMouseManager().mouseSeen)
-				yOffset++;
+			int mco = handler.getGame().moveCameraOffset;
+			int frameX = handler.getGame().getFrameRect().x;
+			int frameY = handler.getGame().getFrameRect().y;
+			int frameWidth = handler.getGame().getWidth();
+			int frameHeight = handler.getGame().getHeight();
+
+			if (handler.getMouseX() <= mco && handler.getMouseManager().mouseSeen)
+				xOffset -= handler.getGame().cameraSpeed;
+			if (handler.getMouseX() >= handler.getGame().getWidth() - mco && handler.getMouseManager().mouseSeen)
+				xOffset += handler.getGame().cameraSpeed;
+			if (handler.getMouseY() <= mco && handler.getMouseManager().mouseSeen)
+				yOffset -= handler.getGame().cameraSpeed;
+			if (handler.getMouseY() >= handler.getGame().getHeight() - mco && handler.getMouseManager().mouseSeen)
+				yOffset += handler.getGame().cameraSpeed;
+
+			// check if mouse is outside frame
+			if (handler.getGame().getDisplay().getFrame().isFocused()) {
+				// x<
+				if (MouseInfo.getPointerInfo().getLocation().x < frameX + mco)
+					handler.getGame().robot.mouseMove(frameX + mco, MouseInfo.getPointerInfo().getLocation().y);
+				// x>
+				if (MouseInfo.getPointerInfo().getLocation().x > frameX + handler.getGame().getWidth() - mco)
+					handler.getGame().robot.mouseMove(
+							handler.getGame().getFrameRect().x + handler.getGame().getWidth() - mco + 10,
+							MouseInfo.getPointerInfo().getLocation().y);
+				// y<
+				if (MouseInfo.getPointerInfo().getLocation().y < handler.getGame().getFrameRect().y + mco)
+					handler.getGame().robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x,
+							handler.getGame().getFrameRect().y + mco);
+				// y>
+				if (MouseInfo.getPointerInfo().getLocation().y < handler.getGame().getFrameRect().y
+						+ handler.getGame().getHeight() - mco)
+					handler.getGame().robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x,
+							handler.getGame().getFrameRect().y + handler.getGame().getHeight() - mco + 10);
+
+			}
+
 		}
 	}
 
