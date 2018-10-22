@@ -111,6 +111,13 @@ public class Game implements Runnable {
 		}
 		mouseManager.tick();
 		keyManager.tick();
+
+		Handler.debugInfoList.put(1,
+				"Res " + width + "x" + height + "   mouse " + handler.getMouseX() + "x" + handler.getMouseY() + "   active:" + handler.getMouseManager().mouseSeen);
+		Handler.debugInfoList.put(2,"camera " + 
+				handler.getWorld().getCamera().getxOffset() + "x" + handler.getWorld().getCamera().getyOffset());
+		Handler.debugInfoList.put(3,"entities " + handler.getWorld().getEntityManager().getEntities().size());
+		
 	}
 
 	public void render() {

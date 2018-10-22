@@ -4,23 +4,50 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.HashMap;
 
 import game.main.Handler;
 import game.resources.Resource;
 
 public class Tile extends WorldObject {
 
-	private int width, height;
-	private Resource texture;
-	private Rectangle solidRect;
+	public static HashMap<Integer, TileProperties> tiles = new HashMap<Integer, TileProperties>() {
+		{
+			put(1, new TileProperties(1, "grass", false));
+			put(2, new TileProperties(2, "rock", false));
 
-	public Tile(Handler handler, int x, int y, int width, int height, Resource texture) {
+		}
+	};
+
+	public static class TileProperties {
+		public int id;
+		public String resourcename;
+		public boolean solid;
+
+		public TileProperties(int id, String resourcename, boolean solid) {
+			this.id = id;
+			this.resourcename = resourcename;
+			this.solid = solid;
+		}
+	}
+
+	private int width, height;
+	private TileProperties properties;
+	private Rectangle solidRect;
+	private Resource texture;
+
+	public Tile(Handler handler, int x, int y, int width, int height, TileProperties properties) {
 		super(handler);
 		setX(x);
 		setY(y);
 		this.width = width;
 		this.height = height;
-		this.texture = texture;
+		this.properties = properties;
+		try {
+			this.texture = handler.getResource(properties.resourcename);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getWidth() {
@@ -39,12 +66,12 @@ public class Tile extends WorldObject {
 		return solidRect;
 	}
 
-	public void setTexture(Resource texture) {
-		this.texture = texture;
+	public Rectangle getRect() {
+		return new Rectangle(getX(), getY(), width, height);
 	}
 
-	public Resource getTexture() {
-		return texture;
+	public Rectangle getRenderRect() {
+		return new Rectangle(xRenderPos, yRenderPos, width, height);
 	}
 
 	@Override
@@ -61,7 +88,7 @@ public class Tile extends WorldObject {
 			g.fillRect(xRenderPos, yRenderPos, g.getFontMetrics().stringWidth(errText), 25);
 			g.setColor(Color.RED);
 			g.drawString(errText, xRenderPos, yRenderPos + 20);
-			
+
 		}
 	}
 

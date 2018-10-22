@@ -2,6 +2,7 @@ package game.ingame.world;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Robot;
 
 import game.ingame.GameObject;
 import game.main.Handler;
@@ -20,6 +21,14 @@ public class Camera extends GameObject {
 		this.handler = handler;
 		this.focusedElement = focusedElement;
 	}
+	
+	public int calcXRenderPos(int xWorld) {
+		return xWorld - xOffset;
+	}
+	
+	public int calcYRenderPos(int yWorld) {
+		return yWorld - yOffset;
+	}
 
 	@Override
 	public void tick() {
@@ -33,6 +42,15 @@ public class Camera extends GameObject {
 			// update viewArea
 			viewArea = new Rectangle(dWidth / 2 - viewAreaSize / 2, dHeight / 2 - viewAreaSize / 2, viewAreaSize,
 					viewAreaSize);
+		} else {
+			if(handler.getMouseX() <= 5 && handler.getMouseManager().mouseSeen)
+				xOffset--;
+			if(handler.getMouseX() >= handler.getGame().getWidth() - 5 && handler.getMouseManager().mouseSeen)
+				xOffset++;
+			if(handler.getMouseY() <= 5 && handler.getMouseManager().mouseSeen)
+				yOffset--;
+			if(handler.getMouseY() >= handler.getGame().getHeight() - 5 && handler.getMouseManager().mouseSeen)
+				yOffset++;
 		}
 	}
 

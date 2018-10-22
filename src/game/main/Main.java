@@ -7,7 +7,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		//int width = 1280, height = 720;
-		int width = 350, height = 350;
+		int width = 400, height = 600;
 		
 		boolean fullscreen = false;
 		

@@ -36,6 +36,7 @@ public class ResourceStorage {
 				}
 			}
 		}
+		System.out.println("[ResourceStorage] Resource " + name + " not found");
 		return null;
 	}
 

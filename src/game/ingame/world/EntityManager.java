@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import game.ingame.entity.Entity;
+import game.ingame.entity.Player;
+import game.ingame.gameplay.characters.Character;
+import game.ingame.gameplay.characters.NibbaChamp;
 import game.main.Handler;
 import game.other.RenderClass;
 import game.other.TickClass;
@@ -13,10 +16,17 @@ public class EntityManager implements TickClass, RenderClass {
 	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	private ArrayList<Entity> addQue = new ArrayList<Entity>();
 	private ArrayList<Entity> removeQue = new ArrayList<Entity>();
+	private Player self;
+	private Handler handler;
 	private boolean renderEntities = true, isRendering = false;
 
 	public EntityManager(Handler handler) {
-
+		this.handler = handler;
+		// TODO: add username
+		this.self = new Player(handler, "Test");
+		this.self.setCharacter(Character.getNewInstanceById(handler, this.self, 1));
+		this.self.setSelf(true);
+		registerEntity(this.self);
 	}
 
 	public void registerEntity(Entity entity) {
@@ -25,6 +35,10 @@ public class EntityManager implements TickClass, RenderClass {
 
 	public void removeEntity(Entity entity) {
 		removeQue.add(entity);
+	}
+	
+	public ArrayList<Entity> getEntities() {
+		return entities;
 	}
 
 	@Override

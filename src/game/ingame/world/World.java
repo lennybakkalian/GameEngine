@@ -1,9 +1,11 @@
 package game.ingame.world;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import game.ingame.GameObject;
+import game.ingame.world.Tile.TileProperties;
 import game.main.Handler;
 
 public class World extends GameObject {
@@ -25,6 +27,18 @@ public class World extends GameObject {
 			t.setX(t.getX() * t.getWidth());
 			t.setY(t.getY() * t.getHeight());
 		}
+	}
+
+	public ArrayList<Tile> getTiles() {
+		return tiles;
+	}
+
+	public Tile getTileAt(int x, int y) {
+		for (Tile t : tiles) {
+			if (t.getRect().intersects(new Rectangle(x, y, 1, 1)))
+				return t;
+		}
+		return null;
 	}
 
 	public EntityManager getEntityManager() {
@@ -62,7 +76,22 @@ public class World extends GameObject {
 		ArrayList<Tile> tiles = new ArrayList<Tile>();
 		for (int iWidth = 0; iWidth < width; iWidth++)
 			for (int iHeight = 0; iHeight < height; iHeight++) {
-				tiles.add(new Tile(handler, iWidth, iHeight, tileWidth, tileHeight, handler.getResource("grass")));
+				tiles.add(new Tile(handler, iWidth, iHeight, tileWidth, tileHeight, Tile.tiles.get(1)));
+			}
+		return new World(handler, tiles);
+	}
+
+	public static World testWorldGenerator(Handler handler) {
+		ArrayList<Tile> tiles = new ArrayList<Tile>();
+		int width = 15, height = 15, tileWidth = 20, tileHeight = 20;
+		for (int iWidth = 0; iWidth < width; iWidth++)
+			for (int iHeight = 0; iHeight < height; iHeight++) {
+				TileProperties t = Tile.tiles.get(1);
+				if (iWidth == 0 || iHeight == 0 || iWidth == width - 1 || iHeight == height - 1)
+					t = Tile.tiles.get(2);
+				if (iWidth == 4 && iHeight > 3 && iHeight < 10)
+					t = Tile.tiles.get(2);
+				tiles.add(new Tile(handler, iWidth, iHeight, tileWidth, tileHeight, t));
 			}
 		return new World(handler, tiles);
 	}

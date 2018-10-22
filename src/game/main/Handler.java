@@ -1,5 +1,7 @@
 package game.main;
 
+import java.util.HashMap;
+
 import game.ingame.world.EntityManager;
 import game.ingame.world.World;
 import game.managers.KeyManager;
@@ -11,6 +13,7 @@ public class Handler {
 
 	private Game game;
 	private World world;
+	public static HashMap<Integer, String> debugInfoList = new HashMap<Integer, String>();
 
 	public Handler(Game game) {
 		this.game = game;
@@ -35,11 +38,11 @@ public class Handler {
 	public int getMouseY() {
 		return getMouseManager().currentPos.y;
 	}
-	
+
 	public EntityManager getEntityManager() {
 		return getWorld().getEntityManager();
 	}
-	
+
 	public Resource getResource(String name) {
 		Resource res = game.getResources().getByName(name);
 		if (res == null) {

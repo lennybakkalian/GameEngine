@@ -1,6 +1,8 @@
 package game.managers;
 
+import java.awt.AWTException;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -16,6 +18,9 @@ public class MouseManager implements MouseListener, MouseMotionListener, MouseWh
 	private boolean[] pressedButtons = new boolean[2];
 	private boolean leftBtn = false, rightBtn = false;
 	public Rectangle currentPos = new Rectangle(0, 0, 1, 1);
+
+	// this will set to true, when the mouse move once in the frame
+	public boolean mouseSeen = false;
 
 	public MouseManager(Handler handler) {
 		this.handler = handler;
@@ -54,6 +59,7 @@ public class MouseManager implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
+		mouseSeen = true;
 		if (handler.getCurrentUIHandler() != null)
 			handler.getCurrentUIHandler().onMouseMove(arg0);
 		currentPos.x = arg0.getX();
@@ -68,10 +74,12 @@ public class MouseManager implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
+		mouseSeen = true;
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
+		mouseSeen = false;
 	}
 
 	@Override

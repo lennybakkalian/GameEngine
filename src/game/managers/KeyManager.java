@@ -9,13 +9,15 @@ import game.other.TickClass;
 
 public class KeyManager implements KeyListener, TickClass {
 
-	private boolean[] pressedKeys;
+	private boolean[] pressedKeys, justPressed, hasPressed;
 	private HashMap<String, Integer> charToKeyCode;
 	private Handler handler;
 
 	public KeyManager(Handler handler) {
 		this.handler = handler;
 		pressedKeys = new boolean[1000];
+		justPressed = new boolean[1000];
+		hasPressed = new boolean[1000];
 		this.charToKeyCode = new HashMap<String, Integer>();
 	}
 
@@ -30,6 +32,11 @@ public class KeyManager implements KeyListener, TickClass {
 		return false;
 	}
 
+	public boolean justPressed(String character) {
+		return charToKeyCode.get(character.toLowerCase()) != null
+				&& justPressed[charToKeyCode.get(character.toLowerCase())];
+	}
+
 	@Override
 	public void keyPressed(KeyEvent e) {
 		try {
@@ -40,16 +47,15 @@ public class KeyManager implements KeyListener, TickClass {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
-		if(handler.getCurrentUIHandler() != null)
+
+		if (handler.getCurrentUIHandler() != null)
 			handler.getCurrentUIHandler().keyPressed(e);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		pressedKeys[e.getKeyCode()] = false;
-		
-		if(handler.getCurrentUIHandler() != null)
+		if (handler.getCurrentUIHandler() != null)
 			handler.getCurrentUIHandler().keyReleased(e);
 	}
 
@@ -59,6 +65,16 @@ public class KeyManager implements KeyListener, TickClass {
 
 	@Override
 	public void tick() {
-		
+		for (int i = 0; i < pressedKeys.length; i++) {
+			justPressed[i] = false;
+			if (pressedKeys[i]) {
+				if (!hasPressed[i]) {
+					justPressed[i] = true;
+				}
+				hasPressed[i] = true;
+			} else {
+				hasPressed[i] = false;
+			}
+		}
 	}
 }

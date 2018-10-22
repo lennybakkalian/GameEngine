@@ -2,6 +2,8 @@ package game.ingame.gameplay.abilities;
 
 import java.awt.Graphics;
 
+import game.ingame.KeyboardSettings;
+import game.ingame.KeyboardSettings.ACTION;
 import game.ingame.entity.Entity;
 import game.ingame.world.WorldObject;
 import game.main.Handler;
@@ -9,21 +11,30 @@ import game.resources.Resource;
 
 public class Ability extends WorldObject {
 
-	private float cooldown;
+	private Long cooldown;
 	private Long lastUse = 0L;
 	private Resource inventarSplashArt;
-	private Entity source;
+	public Entity caster;
+	public ACTION keybound;
 
-	public Ability(Handler handler, float cooldown, Entity source) {
+	public Ability(Handler handler, Long cooldown, Entity caster, ACTION keybound) {
 		super(handler);
 		this.cooldown = cooldown;
-		this.source = source;
+		this.caster = caster;
+		this.keybound = keybound;
 	}
 
 	public void use() {
-		if (cooldown <= 0L) {
-			
+
+	}
+
+	public void requestUse() {
+		Long currentTime = System.currentTimeMillis();
+		if(currentTime > lastUse + cooldown) {
+			lastUse = currentTime;
+			System.out.println("USE");
 		}
+		System.out.println(lastUse + cooldown - currentTime);
 	}
 
 	public Resource getInventarSplashArt() {
@@ -36,6 +47,9 @@ public class Ability extends WorldObject {
 
 	@Override
 	public void tick() {
+		if(handler.getKeyManager().justPressed(KeyboardSettings.keybounds.get(keybound))) {
+			requestUse();
+		}
 		super.tick();
 	}
 
