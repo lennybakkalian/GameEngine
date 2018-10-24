@@ -23,7 +23,8 @@ public class World extends GameObject {
 		// add default camera
 		setCamera(new Camera(handler, null));
 
-		// world size will be calculated by tileWidth*xTiles // tileHeight*yTiles
+		// world size will be calculated by tileWidth*xTiles //
+		// tileHeight*yTiles
 		for (Tile t : tiles) {
 			t.setX(t.getX() * t.getWidth());
 			t.setY(t.getY() * t.getHeight());
@@ -96,13 +97,13 @@ public class World extends GameObject {
 			}
 		return new World(handler, tiles);
 	}
-	
+
 	public static World randomWorldGenerator(Handler handler) {
 		ArrayList<Tile> tiles = new ArrayList<Tile>();
 		int width = 30, height = 30, tileWidth = 20, tileHeight = 20;
 		for (int iWidth = 0; iWidth < width; iWidth++)
 			for (int iHeight = 0; iHeight < height; iHeight++) {
-				TileProperties t = Tile.tiles.get(new Random().nextInt(10) > 2 ? 1:2);
+				TileProperties t = Tile.tiles.get(new Random().nextInt(150) > 2 ? 1:2);
 				if (iWidth == 0 || iHeight == 0 || iWidth == width - 1 || iHeight == height - 1)
 					t = Tile.tiles.get(2);
 				tiles.add(new Tile(handler, iWidth, iHeight, tileWidth, tileHeight, t));

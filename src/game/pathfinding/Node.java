@@ -17,7 +17,8 @@ public class Node {
 	public Tile tile;
 	public Node parent;
 	public NodeType type;
-	public int fCost = 0;
+	public double hCost = 0;
+	public double gCost = 0;
 
 	public Node(Tile t, NodeType type, Node parent) {
 		this.x = t.getX() / t.getWidth();
@@ -27,8 +28,8 @@ public class Node {
 		this.parent = parent;
 	}
 	
-	public int getFinalCost() {
-		return fCost;
+	public double getFinalCost() {
+		return hCost + gCost;
 	}
 
 	public void render(Graphics g, Path p) {
@@ -50,9 +51,9 @@ public class Node {
 		Utils.fillRect(g, tile.getRenderRect());
 		
 		
-		g.setFont(new Font("Arial", Font.BOLD,20));
+		g.setFont(new Font("Arial", Font.BOLD,18));
 		g.setColor(Color.black);
-		g.drawString("" + p.calcFCost(this), tile.xRenderPos, tile.yRenderPos + 20);
+		g.drawString("" + (int) p.calcHCost(this), tile.xRenderPos + 1, tile.yRenderPos + 18);
 		
 	}
 }

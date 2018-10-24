@@ -2,32 +2,29 @@ package game.pathfinding;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 import game.ingame.world.Tile;
 import game.ingame.world.World;
 import game.ingame.world.WorldObject;
 import game.main.Handler;
+import game.main.Utils;
 import game.pathfinding.Node.NodeType;
 
 public class Path extends WorldObject {
 
 	private World world;
 	private int startX, startY, endX, endY;
-	private ArrayList<Node> currentNodes;
-	private ArrayList<Node> scannedNodes;
 	private ArrayList<Node> allNodes;
 	private Node start, end, current;
-	private boolean foundPath = false;
+	private boolean done = false;
 	private ArrayList<Node> closed;
 	private PriorityQueue<Node> open;
+	private ArrayList<Node> foundedPath;
 
 	@SuppressWarnings("unchecked")
 	public Path(Handler handler, World world, int startX, int startY, int endX, int endY) {
@@ -39,10 +36,7 @@ public class Path extends WorldObject {
 		this.endY = endY;
 		setX(startX);
 		setY(startY);
-		this.currentNodes = new ArrayList<Node>();
-		this.scannedNodes = new ArrayList<Node>();
 		this.allNodes = new ArrayList<Node>();
-
 		this.start = new Node(world.getTileAt(startX, startY), NodeType.START, null);
 		this.end = new Node(world.getTileAt(endX, endY), NodeType.END, null);
 		for (Tile t : world.getTiles()) {
@@ -54,6 +48,7 @@ public class Path extends WorldObject {
 				allNodes.add(new Node(t, type, null));
 
 		}
+		foundedPath = new ArrayList<Node>();
 		closed = new ArrayList<Node>();
 		open = new PriorityQueue<Node>(new Comparator() {
 			@Override
@@ -69,16 +64,29 @@ public class Path extends WorldObject {
 	public void findPath(Graphics g) {
 		for (Node c : closed)
 			c.render(g, this);
-		if (foundPath)
+		for (Node c : open)
+			c.render(g, this);
+		g.setColor(new Color(0, 255, 0, 100));
+		for (Node c : foundedPath)
+			Utils.fillRect(g, c.tile.getRenderRect());
+		if (done)
 			return;
 		current = open.poll();
-		if (current == null)
+		if (current == null) {
+			done = true;
+			System.out.println("could not find a path");
 			return;
+		}
 		open.remove(current);
 		closed.add(current);
 		if (current.type == NodeType.END) {
-			foundPath = true;
-			System.out.println("found path");
+			done = true;
+			// reconstuct path
+			Node reconstruct = current.parent;
+			while (reconstruct != null) {
+				foundedPath.add(reconstruct);
+				reconstruct = reconstruct.parent;
+			}
 			return;
 		}
 
@@ -94,7 +102,8 @@ public class Path extends WorldObject {
 		if (neighbour != null && checkNeighbour(neighbour)) {
 			neighbour.render(g, this);
 			if (!open.contains(neighbour) /* or neighbour shorter */) {
-				neighbour.fCost = calcFCost(neighbour);
+				neighbour.hCost = calcHCost(neighbour) * 2;
+				neighbour.gCost = current.gCost + 1;
 				neighbour.parent = current;
 				if (!open.contains(neighbour))
 					open.add(neighbour);
@@ -103,11 +112,11 @@ public class Path extends WorldObject {
 		}
 	}
 
-	public int calcFCost(Node n) {
+	public double calcHCost(Node n) {
 		// calc raw distance
 		int k1 = Math.abs(n.x - end.x);
 		int k2 = Math.abs(n.y - end.y);
-		return (int) Math.sqrt((k1 * k1) + (k2 * k2));
+		return Math.sqrt((k1 * k1) + (k2 * k2));
 	}
 
 	public boolean checkNeighbour(Node n) {
