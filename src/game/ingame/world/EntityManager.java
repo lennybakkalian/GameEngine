@@ -26,6 +26,8 @@ public class EntityManager implements TickClass, RenderClass {
 		this.self = new Player(handler, "Test");
 		this.self.setCharacter(Character.getNewInstanceById(handler, this.self, 1));
 		this.self.setSelf(true);
+		this.self.setX(30);
+		this.self.setY(30);
 		registerEntity(this.self);
 	}
 

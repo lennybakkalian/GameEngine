@@ -6,6 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import game.ingame.world.World;
 import game.main.Handler;
@@ -22,9 +23,8 @@ public class LoadingState extends State {
 
 	public LoadingState(Handler handler) {
 		super(handler);
-
 		// handler.setWorld(World.flatGenerator(handler, 10, 10, 30, 30));
-		handler.setWorld(World.testWorldGenerator(handler));
+		handler.setWorld(World.randomWorldGenerator(handler));
 		// testImg = handler.getResource("grass").getImage();
 		// g = new Grid(10, 10, 30, 30, 10, Color.GRAY);
 
@@ -57,9 +57,9 @@ public class LoadingState extends State {
 			i++;
 			String s = Handler.debugInfoList.get(entry);
 			g.setColor(Color.BLACK);
-			g.fillRect(10, 285 + (22 * i), fm.stringWidth(s),  20);
+			g.fillRect(10, 385 + (22 * i), fm.stringWidth(s),  20);
 			g.setColor(Color.white);
-			g.drawString(s, 10, 300 + (22 * i));
+			g.drawString(s, 10, 400 + (22 * i));
 		}
 	}
 

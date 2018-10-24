@@ -50,6 +50,10 @@ public class Player extends Entity {
 
 		}
 
+		if (currentPath == null)
+			currentPath = new Path(handler, handler.getWorld(), getX() + (collisionBox.width / 2),
+					getY() + (collisionBox.height / 2), 170, 220);
+
 		// TODO:debug
 		if (handler.getKeyManager().justPressed("q")) {
 			setX(handler.getWorld().getCamera().getxOffset() + handler.getMouseX());
@@ -58,8 +62,9 @@ public class Player extends Entity {
 		if (handler.getKeyManager().justPressed("w")) {
 			int xGoal = handler.getWorld().getCamera().getxOffset() + handler.getMouseX();
 			int yGoal = handler.getWorld().getCamera().getyOffset() + handler.getMouseY();
-			
-			currentPath = new Path(handler, handler.getWorld(), getX(), getY(), xGoal, yGoal);
+
+			currentPath = new Path(handler, handler.getWorld(), getX() + (collisionBox.width / 2),
+					getY() + (collisionBox.height / 2), xGoal, yGoal);
 		}
 
 		if (currentPath != null)

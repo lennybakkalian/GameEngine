@@ -14,7 +14,7 @@ public class Tile extends WorldObject {
 	public static HashMap<Integer, TileProperties> tiles = new HashMap<Integer, TileProperties>() {
 		{
 			put(1, new TileProperties(1, "grass", false));
-			put(2, new TileProperties(2, "rock", false));
+			put(2, new TileProperties(2, "rock", true));
 
 		}
 	};
@@ -35,6 +35,7 @@ public class Tile extends WorldObject {
 	private TileProperties properties;
 	private Rectangle solidRect;
 	private Resource texture;
+	private boolean fullySolid;
 
 	public Tile(Handler handler, int x, int y, int width, int height, TileProperties properties) {
 		super(handler);
@@ -43,11 +44,16 @@ public class Tile extends WorldObject {
 		this.width = width;
 		this.height = height;
 		this.properties = properties;
+		this.fullySolid = properties.solid;
 		try {
 			this.texture = handler.getResource(properties.resourcename);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isFullySolid() {
+		return fullySolid;
 	}
 
 	public int getWidth() {

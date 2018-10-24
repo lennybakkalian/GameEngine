@@ -32,8 +32,11 @@ public class Game implements Runnable {
 	private State state;
 	private Display display;
 	private Handler handler;
+	
+	// CAMERA
 	public int moveCameraOffset = 40;
 	public int cameraSpeed = 2;
+	public boolean debugcam = true;
 
 	private BufferStrategy bs;
 	private Graphics g;

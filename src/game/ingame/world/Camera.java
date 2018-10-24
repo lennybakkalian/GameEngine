@@ -49,6 +49,22 @@ public class Camera extends GameObject {
 			int frameY = handler.getGame().getFrameRect().y;
 			int frameWidth = handler.getGame().getWidth();
 			int frameHeight = handler.getGame().getHeight();
+			int mouseX = MouseInfo.getPointerInfo().getLocation().x;
+			int mouseY = MouseInfo.getPointerInfo().getLocation().y;
+			int titleBarHeight = 40;
+			
+			
+			if(handler.getGame().debugcam) {
+				if(handler.getKeyManager().charPressed("j"))
+					xOffset -= handler.getGame().cameraSpeed;
+				if(handler.getKeyManager().charPressed("i"))
+					yOffset -= handler.getGame().cameraSpeed;
+				if(handler.getKeyManager().charPressed("k"))
+					yOffset += handler.getGame().cameraSpeed;
+				if(handler.getKeyManager().charPressed("l"))
+					xOffset += handler.getGame().cameraSpeed;
+				
+			}
 
 			if (handler.getMouseX() <= mco && handler.getMouseManager().mouseSeen)
 				xOffset -= handler.getGame().cameraSpeed;
@@ -60,24 +76,31 @@ public class Camera extends GameObject {
 				yOffset += handler.getGame().cameraSpeed;
 
 			// check if mouse is outside frame
-			if (handler.getGame().getDisplay().getFrame().isFocused()) {
+			if (handler.getGame().getDisplay().getFrame().isFocused() && mco > 0 && !handler.getGame().debugcam) {
 				// x<
-				if (MouseInfo.getPointerInfo().getLocation().x < frameX + mco)
-					handler.getGame().robot.mouseMove(frameX + mco, MouseInfo.getPointerInfo().getLocation().y);
-				// x>
-				if (MouseInfo.getPointerInfo().getLocation().x > frameX + handler.getGame().getWidth() - mco)
-					handler.getGame().robot.mouseMove(
-							handler.getGame().getFrameRect().x + handler.getGame().getWidth() - mco + 10,
-							MouseInfo.getPointerInfo().getLocation().y);
+				if (mouseX < frameX + mco) {
+					handler.getGame().robot.mouseMove(frameX + mco, mouseY);
+					System.out.println(1);
+					return;
+				}
 				// y<
-				if (MouseInfo.getPointerInfo().getLocation().y < handler.getGame().getFrameRect().y + mco)
-					handler.getGame().robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x,
-							handler.getGame().getFrameRect().y + mco);
+				if (mouseY < frameY + mco + titleBarHeight/* adding window border */) {
+					handler.getGame().robot.mouseMove(mouseX, frameY + mco + titleBarHeight);
+					System.out.println(2);
+					return;
+				}
+				// x>
+				if (mouseX > frameX + frameWidth - mco + 20) {
+					handler.getGame().robot.mouseMove(frameX + frameWidth - mco + 20, mouseY);
+					System.out.println(3);
+					return;
+				}
 				// y>
-				if (MouseInfo.getPointerInfo().getLocation().y < handler.getGame().getFrameRect().y
-						+ handler.getGame().getHeight() - mco)
-					handler.getGame().robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x,
-							handler.getGame().getFrameRect().y + handler.getGame().getHeight() - mco + 10);
+				if (mouseY > frameY + frameHeight - mco + 20) {
+					handler.getGame().robot.mouseMove(mouseX, frameY + frameHeight + titleBarHeight - mco + 20);
+					System.out.println(4);
+					return;
+				}
 
 			}
 
