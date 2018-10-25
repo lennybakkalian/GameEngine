@@ -42,4 +42,8 @@ public class Utils {
 		g.fillRect(r.x, r.y, r.width, r.height);
 	}
 
+	public static void drawArrow(Graphics g, int x, int y, int destX, int destY, int size) {
+		g.drawLine(x, y, destX, destY);
+	}
+
 }

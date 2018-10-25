@@ -103,7 +103,7 @@ public class World extends GameObject {
 		int width = 30, height = 30, tileWidth = 20, tileHeight = 20;
 		for (int iWidth = 0; iWidth < width; iWidth++)
 			for (int iHeight = 0; iHeight < height; iHeight++) {
-				TileProperties t = Tile.tiles.get(new Random().nextInt(150) > 2 ? 1:2);
+				TileProperties t = Tile.tiles.get(new Random().nextInt(30) > 2 ? 1:2);
 				if (iWidth == 0 || iHeight == 0 || iWidth == width - 1 || iHeight == height - 1)
 					t = Tile.tiles.get(2);
 				tiles.add(new Tile(handler, iWidth, iHeight, tileWidth, tileHeight, t));

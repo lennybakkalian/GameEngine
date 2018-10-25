@@ -21,10 +21,11 @@ public class Path extends WorldObject {
 	private int startX, startY, endX, endY;
 	private ArrayList<Node> allNodes;
 	private Node start, end, current;
-	private boolean done = false;
+	private boolean done = false, diagonalPathfinding = false;
 	private ArrayList<Node> closed;
 	private PriorityQueue<Node> open;
 	private ArrayList<Node> foundedPath;
+	private Long started, time = 0L;
 
 	@SuppressWarnings("unchecked")
 	public Path(Handler handler, World world, int startX, int startY, int endX, int endY) {
@@ -59,9 +60,12 @@ public class Path extends WorldObject {
 			}
 		});
 		open.add(start);
+		started = System.currentTimeMillis();
+		
 	}
 
 	public void findPath(Graphics g) {
+		time = System.currentTimeMillis() - started;
 		for (Node c : closed)
 			c.render(g, this);
 		for (Node c : open)
@@ -90,20 +94,36 @@ public class Path extends WorldObject {
 			return;
 		}
 
-		processNeighbour(current, -1, 0, g);
-		processNeighbour(current, 1, 0, g);
-		processNeighbour(current, 0, -1, g);
-		processNeighbour(current, 0, 1, g);
+		processNeighbour(current, -1, 0, 1, g);
+		processNeighbour(current, 1, 0, 1, g);
+		processNeighbour(current, 0, -1, 1, g);
+		processNeighbour(current, 0, 1, 1, g);
+
+		// diagonal nodes / buggy
+		if (diagonalPathfinding) {
+			Node rn = getNeighbour(current, 1, 0);
+			Node ln = getNeighbour(current, -1, 0);
+			Node tn = getNeighbour(current, 0, -1);
+			Node bn = getNeighbour(current, 0, 1);
+			if (canMoveOn(ln) || canMoveOn(tn))
+				processNeighbour(current, -1, -1, 1, g);
+			if (canMoveOn(tn) || canMoveOn(rn))
+				processNeighbour(current, 1, -1, 1, g);
+			if (canMoveOn(ln) || canMoveOn(bn))
+				processNeighbour(current, -1, 1, 1, g);
+			if (canMoveOn(rn) || canMoveOn(bn))
+				processNeighbour(current, 1, 1, 1, g);
+		}
 
 	}
 
-	public void processNeighbour(Node current, int xOffset, int yOffset, Graphics g) {
+	public void processNeighbour(Node current, int xOffset, int yOffset, int addGCost, Graphics g) {
 		Node neighbour = getNeighbour(current, xOffset, yOffset);
 		if (neighbour != null && checkNeighbour(neighbour)) {
 			neighbour.render(g, this);
 			if (!open.contains(neighbour) /* or neighbour shorter */) {
-				neighbour.hCost = calcHCost(neighbour) * 2;
-				neighbour.gCost = current.gCost + 1;
+				neighbour.hCost = calcHCost(neighbour);
+				neighbour.gCost = current.gCost + addGCost;
 				neighbour.parent = current;
 				if (!open.contains(neighbour))
 					open.add(neighbour);
@@ -120,7 +140,13 @@ public class Path extends WorldObject {
 	}
 
 	public boolean checkNeighbour(Node n) {
-		return n.type != NodeType.SOLID && !closed.contains(n);
+		return canMoveOn(n) && !closed.contains(n);
+	}
+
+	public boolean canMoveOn(Node n) {
+		if (n == null)
+			return false;
+		return n.type != NodeType.SOLID;
 	}
 
 	public Node getNeighbour(Node n, int xOffset, int yOffset) {
