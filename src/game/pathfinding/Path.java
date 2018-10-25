@@ -12,7 +12,6 @@ import game.ingame.world.Tile;
 import game.ingame.world.World;
 import game.ingame.world.WorldObject;
 import game.main.Handler;
-import game.main.Utils;
 import game.pathfinding.Node.NodeType;
 
 public class Path extends WorldObject {
@@ -61,18 +60,9 @@ public class Path extends WorldObject {
 		});
 		open.add(start);
 		started = System.currentTimeMillis();
-		
 	}
 
-	public void findPath(Graphics g) {
-		time = System.currentTimeMillis() - started;
-		for (Node c : closed)
-			c.render(g, this);
-		for (Node c : open)
-			c.render(g, this);
-		g.setColor(new Color(0, 255, 0, 100));
-		for (Node c : foundedPath)
-			Utils.fillRect(g, c.tile.getRenderRect());
+	public void findPath() {
 		if (done)
 			return;
 		current = open.poll();
@@ -86,41 +76,44 @@ public class Path extends WorldObject {
 		if (current.type == NodeType.END) {
 			done = true;
 			// reconstuct path
+			current.isPath = true;
+			foundedPath.add(current);
 			Node reconstruct = current.parent;
 			while (reconstruct != null) {
 				foundedPath.add(reconstruct);
+				reconstruct.isPath = true;
 				reconstruct = reconstruct.parent;
 			}
 			return;
 		}
 
-		processNeighbour(current, -1, 0, 1, g);
-		processNeighbour(current, 1, 0, 1, g);
-		processNeighbour(current, 0, -1, 1, g);
-		processNeighbour(current, 0, 1, 1, g);
+		processNeighbour(current, -1, 0, 1);
+		processNeighbour(current, 1, 0, 1);
+		processNeighbour(current, 0, -1, 1);
+		processNeighbour(current, 0, 1, 1);
 
-		// diagonal nodes / buggy
-		if (diagonalPathfinding) {
+		// diagonal nodes / not always the shortest path
+		// TODO: test 1.4
+		if (diagonalPathfinding || true) {
 			Node rn = getNeighbour(current, 1, 0);
 			Node ln = getNeighbour(current, -1, 0);
 			Node tn = getNeighbour(current, 0, -1);
 			Node bn = getNeighbour(current, 0, 1);
 			if (canMoveOn(ln) || canMoveOn(tn))
-				processNeighbour(current, -1, -1, 1, g);
+				processNeighbour(current, -1, -1, 1.4);
 			if (canMoveOn(tn) || canMoveOn(rn))
-				processNeighbour(current, 1, -1, 1, g);
+				processNeighbour(current, 1, -1, 1.4);
 			if (canMoveOn(ln) || canMoveOn(bn))
-				processNeighbour(current, -1, 1, 1, g);
+				processNeighbour(current, -1, 1, 1.4);
 			if (canMoveOn(rn) || canMoveOn(bn))
-				processNeighbour(current, 1, 1, 1, g);
+				processNeighbour(current, 1, 1, 1.4);
 		}
-
+		time = System.currentTimeMillis() - started;
 	}
 
-	public void processNeighbour(Node current, int xOffset, int yOffset, int addGCost, Graphics g) {
+	public void processNeighbour(Node current, int xOffset, int yOffset, double addGCost) {
 		Node neighbour = getNeighbour(current, xOffset, yOffset);
 		if (neighbour != null && checkNeighbour(neighbour)) {
-			neighbour.render(g, this);
 			if (!open.contains(neighbour) /* or neighbour shorter */) {
 				neighbour.hCost = calcHCost(neighbour);
 				neighbour.gCost = current.gCost + addGCost;
@@ -158,13 +151,21 @@ public class Path extends WorldObject {
 
 	@Override
 	public void tick() {
+		while(!done)
+			findPath();
 		super.tick();
 	}
 
 	@Override
 	public void render(Graphics g) {
+		for (int i=0;i<closed.size();i++)
+			closed.get(i).render(g, this);
+		g.setColor(new Color(0, 255, 0, 150));
+		for (int i=0;i<foundedPath.size();i++)
+			// Utils.fillRect(g, c.tile.getRenderRect());
+			foundedPath.get(i).render(g, this);
+
 		Graphics2D g2d = (Graphics2D) g;
-		findPath(g);
 		// render start
 		g2d.setColor(Color.cyan);
 		start.render(g2d, this);
@@ -180,7 +181,7 @@ public class Path extends WorldObject {
 			g.drawRect(t.xRenderPos, t.yRenderPos, t.getWidth(), t.getHeight());
 		}
 		Handler.debugInfoList.put(10, "path: start: " + startX + "x" + startY + "  end: " + endX + "x" + endY);
-
+		Handler.debugInfoList.put(11, "last path searching for " + time + "ms");
 		super.render(g);
 	}
 
