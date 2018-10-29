@@ -12,13 +12,14 @@ public class Player extends Entity {
 	public static int DEFAULT_HEALTH = 1000;
 	private String username;
 	private Character character;
-	private boolean self = false;
+	private boolean self = false,followedPath = false;
 	private Path currentPath;
 
 	public Player(Handler handler, String username) {
 		super(handler, DEFAULT_HEALTH);
 		this.username = username;
 		collisionBox = new Rectangle(0, 0, 20, 20);
+		debugRender = true;
 	}
 
 	public String getUsername() {
@@ -69,6 +70,12 @@ public class Player extends Entity {
 
 		if (currentPath != null)
 			currentPath.tick();
+		
+		// follow path
+		if(!followedPath) {
+			// get angle
+			
+		}
 
 		super.tick();
 	}

@@ -34,7 +34,6 @@ public class Utils {
 	}
 
 	public static void renderRect(Graphics g, Rectangle r) {
-		g.setColor(Color.red);
 		g.drawRect(r.x, r.y, r.width, r.height);
 	}
 

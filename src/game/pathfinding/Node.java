@@ -38,10 +38,10 @@ public class Node {
 	public void render(Graphics g, Path p) {
 		switch (type) {
 		case AIR:
-			g.setColor(new Color(0,0,255,50));
+			g.setColor(new Color(0,0,0,255));
 			break;
 		case SOLID:
-			g.setColor(Color.red);
+			g.setColor(Color.black);
 			break;
 		case START:
 			g.setColor(Color.green);
@@ -55,16 +55,19 @@ public class Node {
 
 		// draw arrow from parent
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setStroke(new BasicStroke(3F));
-		g2d.setColor(isPath ? Color.RED : Color.gray);
+		g2d.setStroke(new BasicStroke(5F));
+		g2d.setColor(isPath ? Color.RED : Color.cyan);
 		if (parent != null)
 			Utils.drawArrow(g, parent.tile.xRenderPos + (parent.tile.getWidth() / 2),
 					parent.tile.yRenderPos + (parent.tile.getHeight() / 2), tile.xRenderPos + (tile.getWidth() / 2),
 					tile.yRenderPos + (tile.getHeight() / 2), 10);
 		
-		g.setFont(new Font("Arial", Font.BOLD, 18));
-		g.setColor(Color.black);
-		g.drawString("" + (int) p.calcHCost(this), tile.xRenderPos + 1, tile.yRenderPos + 18);
+		g.setFont(new Font("Arial", Font.PLAIN, 16));
+		//g.setColor(Color.black);
+		//g.drawString("" + (int) p.calcHCost(this), tile.xRenderPos + 1, tile.yRenderPos + 18);
+		g.setColor(Color.white);
+		g.drawString("" + (int) getFinalCost(), tile.xRenderPos + 1, tile.yRenderPos + 18);
+		
 		// g2d.drawLine(parent.tile.xRenderPos + (parent.tile.getWidth() / 2),
 		// parent.tile.yRenderPos + (parent.tile.getHeight() / 2), tile.xRenderPos +
 		// (tile.getWidth() / 2),
