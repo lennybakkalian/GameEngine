@@ -179,22 +179,6 @@ public class Path extends WorldObject {
 			// Utils.fillRect(g, c.tile.getRenderRect());
 			foundedPath.get(i).render(g, this);
 		}
-		g2d.setColor(Color.red);
-		for (int i = 0; i < shortestPath.size(); i++) {
-			Utils.fillRect(g2d, shortestPath.get(i).tile.getRenderRect());
-			// if (i > 0)
-			// g.drawLine(shortestPath.get(i - 1).tile.xRenderPos, shortestPath.get(i -
-			// 1).tile.yRenderPos,
-			// shortestPath.get(i).tile.xRenderPos, shortestPath.get(i).tile.yRenderPos);
-			if (i > 0) {
-				Node lastNode = shortestPath.get(i - 1);
-				Node thisNode = shortestPath.get(i);
-				g.drawLine(lastNode.tile.xRenderPos + lastNode.tile.getWidth() / 2,
-						lastNode.tile.yRenderPos + lastNode.tile.getHeight() / 2,
-						thisNode.tile.xRenderPos + thisNode.tile.getWidth() / 2,
-						thisNode.tile.yRenderPos + thisNode.tile.getHeight() / 2);
-			}
-		}
 		// render start
 		g2d.setColor(Color.cyan);
 		start.render(g2d, this);
@@ -205,23 +189,44 @@ public class Path extends WorldObject {
 			g.setColor(Color.BLACK);
 			Utils.renderRect(g, t.getRenderRect());
 		}
-		
+
 		shortestPath.clear();
 		shortestPath.add(start);
-		Node lastSavedNode = null;
+		Node lastSavedNode = null, currentNode = null;
+		g2d.setStroke(new BasicStroke(5F));
 		for (int i = foundedPath.size() - 1; i >= 0; i--) {
-			Node currentNode = foundedPath.get(i);
+			currentNode = foundedPath.get(i);
 			if (lastSavedNode == null)
 				lastSavedNode = currentNode;
-			if (!world.canSeeOtherNode(g, lastSavedNode, currentNode) && i > 0) {
+			if (!world.canSeeOtherNode(g, lastSavedNode, currentNode) && i <= foundedPath.size()) {
 				// add last tile to shortestpath
-				shortestPath.add(foundedPath.get(i - 1));
+				shortestPath.add(foundedPath.get(i + 1));
 				lastSavedNode = currentNode;
 			}
 		}
+		// bug?
+		if (!shortestPath.contains(currentNode) && currentNode != null)
+			shortestPath.add(currentNode);
 		shortestPath.add(end);
-		
-		
+
+		g2d.setColor(Color.white);
+		for (int i = 0; i < shortestPath.size(); i++) {
+			// Utils.fillRect(g2d, shortestPath.get(i).tile.getRenderRect());
+			// if (i > 0)
+			// g.drawLine(shortestPath.get(i - 1).tile.xRenderPos, shortestPath.get(i -
+			// 1).tile.yRenderPos,
+			// shortestPath.get(i).tile.xRenderPos, shortestPath.get(i).tile.yRenderPos);
+			g2d.setStroke(new BasicStroke(2F));
+			if (i > 0) {
+				Node lastNode = shortestPath.get(i - 1);
+				Node thisNode = shortestPath.get(i);
+				g.drawLine(lastNode.tile.xRenderPos + lastNode.tile.getWidth() / 2,
+						lastNode.tile.yRenderPos + lastNode.tile.getHeight() / 2,
+						thisNode.tile.xRenderPos + thisNode.tile.getWidth() / 2,
+						thisNode.tile.yRenderPos + thisNode.tile.getHeight() / 2);
+			}
+		}
+
 		Handler.debugInfoList.put(10, "path: start: " + startX + "x" + startY + "  end: " + endX + "x" + endY);
 		Handler.debugInfoList.put(11, "last path searching for " + time + "ms");
 		super.render(g);

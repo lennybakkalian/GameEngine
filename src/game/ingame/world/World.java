@@ -1,7 +1,9 @@
 package game.ingame.world;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -39,12 +41,21 @@ public class World extends GameObject {
 	public ArrayList<Tile> getTiles() {
 		return tiles;
 	}
-
+	
 	public Tile getTileAt(int x, int y) {
+		return getTileAt(x, y, 1, 1);
+	}
+
+	public Tile getTileAt(int x, int y, int width, int height) {
 		for (Tile t : tiles) {
-			if (t.getRect().intersects(new Rectangle(x, y, 1, 1)))
+			if (t.getRect().intersects(new Rectangle(x, y, width, height)))
 				return t;
 		}
+		return null;
+	}
+	
+	public Tile getTilesInArea() {
+		// TODO: continue here
 		return null;
 	}
 
@@ -70,9 +81,16 @@ public class World extends GameObject {
 		for (int i = 1; i < (int) dist; i++) {
 			double newX = startX + Math.sin(angle) * i;
 			double newY = startY + Math.cos(angle) * i;
+			// TODO: bug here
 			Tile t = getTileAt((int) newX, (int) newY);
+			
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setStroke(new BasicStroke(2F));
+			//g.drawLine((int) newX, (int) newY -1, (int) newX, (int) newY);
+			Utils.renderRect(g, t.getRenderRect());
+			
 			if (!result.contains(t)) {
-				g.setColor(new Color(0, 255, 0, 80));
+				g.setColor(new Color(0, 255, 0, 255));
 				//Utils.fillRect(g, t.getRenderRect());
 				// TODO: continue here
 				result.add(t);
@@ -86,8 +104,19 @@ public class World extends GameObject {
 				node1.tile.getY() + (node1.tile.getHeight() / 2), node2.tile.getX() + (node2.tile.getWidth() / 2),
 				node2.tile.getY() + (node2.tile.getHeight() / 2));
 		for (Tile t : tiles)
-			if (t.isFullySolid())
+			if (t.isFullySolid()) {
+				g.setColor(Color.red);
+//				g.drawLine(node1.tile.xRenderPos + node1.tile.getWidth() / 2,
+//						node1.tile.yRenderPos + node1.tile.getHeight() / 2,
+//						node2.tile.xRenderPos + node2.tile.getWidth() / 2,
+//						node2.tile.yRenderPos + node2.tile.getHeight() / 2);
 				return false;
+			}
+		g.setColor(Color.green);
+//		g.drawLine(node1.tile.xRenderPos + node1.tile.getWidth() / 2,
+//				node1.tile.yRenderPos + node1.tile.getHeight() / 2,
+//				node2.tile.xRenderPos + node2.tile.getWidth() / 2,
+//				node2.tile.yRenderPos + node2.tile.getHeight() / 2);
 		return true;
 	}
 
