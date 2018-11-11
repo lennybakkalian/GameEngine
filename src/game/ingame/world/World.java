@@ -19,6 +19,8 @@ public class World extends GameObject {
 	private ArrayList<Tile> tiles;
 	private Camera camera;
 	private EntityManager entityManager;
+	// TODO: hardcoded variable prevent glitch between two walls
+	private int pathOffset = 10;
 
 	public World(Handler handler, ArrayList<Tile> tiles) {
 		super(handler);
@@ -41,54 +43,53 @@ public class World extends GameObject {
 	}
 
 	public Tile getTileAt(int x, int y) {
+		return getTileAt(x, y, 1, 1);
+	}
+
+	public Tile getTileAt(int x, int y, int width, int height) {
 		for (Tile t : tiles) {
-			if (t.getRect().intersects(new Rectangle(x, y, 1, 1)))
+			if (t.getRect().intersects(new Rectangle(x, y, width, height)))
 				return t;
 		}
 		return null;
 	}
 
-	// TODO: bug when end < start
-	// public ArrayList<Tile> getTilesInArea(Rectangle area) {
-	// System.out.println(area);
-	// ArrayList<Tile> result = new ArrayList<Tile>();
-	// for (Tile t : tiles)
-	// if (t.getX() > area.x && t.getX() < area.x + area.width && t.getY() > area.y
-	// && t.getY() < area.y + area.height)
-	// result.add(t);
-	// return result;
-	// }
-
-	public List<Tile> getTilesOnLine(Graphics g, int startX, int startY, int endX, int endY) {
+	public List<Tile> getTilesInArea(int x, int y, int width, int height) {
 		List<Tile> result = new LinkedList<Tile>();
+		for (Tile t : tiles)
+			if (t.getRect().intersects(new Rectangle(x, y, width, height)))
+				result.add(t);
+		return result;
+	}
 
+	public List<Tile> getTilesOnLine(int startX, int startY, int endX, int endY) {
+		List<Tile> result = new LinkedList<Tile>();
 		double angle = Math.atan2(endX - startX, endY - startY);
-
 		// get distance to end
 		double dist = Math.sqrt((Math.abs(startX - endX) * Math.abs(startX - endX))
 				+ ((Math.abs(startY - endY) * (Math.abs(startY - endY)))));
-		for (int i = 1; i < (int) dist; i++) {
+		for (int i = 1; i < (int) dist; i += 8) {
 			double newX = startX + Math.sin(angle) * i;
 			double newY = startY + Math.cos(angle) * i;
-			Tile t = getTileAt((int) newX, (int) newY);
-			if (!result.contains(t)) {
-				g.setColor(new Color(0, 255, 0, 80));
-				//Utils.fillRect(g, t.getRenderRect());
-				// TODO: continue here
+			List<Tile> resultTiles = getTilesInArea((int) newX - (pathOffset / 2), (int) newY - (pathOffset / 2),
+					pathOffset, pathOffset);
+			for (Tile t : resultTiles)
 				result.add(t);
-			}
 		}
 		return result;
 	}
 
-	public boolean canSeeOtherNode(Graphics g, Node node1, Node node2) {
-		List<Tile> tiles = getTilesOnLine(g, node1.tile.getX() + (node1.tile.getWidth() / 2),
-				node1.tile.getY() + (node1.tile.getHeight() / 2), node2.tile.getX() + (node2.tile.getWidth() / 2),
-				node2.tile.getY() + (node2.tile.getHeight() / 2));
+	public boolean canSeeOtherTile(Tile t1, Tile t2) {
+		List<Tile> tiles = getTilesOnLine((int) t1.getX() + (t1.getWidth() / 2), (int) t1.getY() + (t1.getHeight() / 2),
+				(int) t2.getX() + (t2.getWidth() / 2), (int) t2.getY() + (t2.getHeight() / 2));
 		for (Tile t : tiles)
 			if (t.isFullySolid())
 				return false;
 		return true;
+	}
+
+	public boolean canSeeOtherNode(Node node1, Node node2) {
+		return canSeeOtherTile(node1.tile, node2.tile);
 	}
 
 	public EntityManager getEntityManager() {
@@ -120,6 +121,15 @@ public class World extends GameObject {
 		entityManager.render(g);
 		camera.render(g);
 		Handler.debugInfoList.put(20, "rendering " + tilesRenderCount + "/" + tiles.size() + " tiles");
+
+		// DEBUG
+		Tile t = getTileAt(camera.getxOffset() + handler.getMouseX(), camera.getyOffset() + handler.getMouseY());
+		if (t != null) {
+			Handler.debugInfoList.put(30, "last tile: " + t.getX() + "x" + t.getY());
+			g.setColor(Color.white);
+			Utils.renderRect(g, t.getRenderRect());
+		}
+
 		super.render(g);
 	}
 
@@ -159,7 +169,7 @@ public class World extends GameObject {
 
 	public static World randomWorldGenerator(Handler handler) {
 		ArrayList<Tile> tiles = new ArrayList<Tile>();
-		int width = 30, height = 30, tileWidth = 20, tileHeight = 20;
+		int width = 60, height = 60, tileWidth = 20, tileHeight = 20;
 		for (int iWidth = 0; iWidth < width; iWidth++)
 			for (int iHeight = 0; iHeight < height; iHeight++) {
 				TileProperties t = Tile.tiles.get(new Random().nextInt(30) > 2 ? 1 : 2);

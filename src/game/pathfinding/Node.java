@@ -24,8 +24,8 @@ public class Node {
 	public boolean isPath = false;
 
 	public Node(Tile t, NodeType type, Node parent) {
-		this.x = t.getX() / t.getWidth();
-		this.y = t.getY() / t.getHeight();
+		this.x = (int) t.getX() / t.getWidth();
+		this.y = (int) t.getY() / t.getHeight();
 		this.tile = t;
 		this.type = type;
 		this.parent = parent;
@@ -54,19 +54,19 @@ public class Node {
 		Utils.fillRect(g, tile.getRenderRect());
 
 		// draw arrow from parent
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setStroke(new BasicStroke(5F));
-		g2d.setColor(isPath ? Color.RED : Color.cyan);
-		if (parent != null)
-			Utils.drawArrow(g, parent.tile.xRenderPos + (parent.tile.getWidth() / 2),
-					parent.tile.yRenderPos + (parent.tile.getHeight() / 2), tile.xRenderPos + (tile.getWidth() / 2),
-					tile.yRenderPos + (tile.getHeight() / 2), 10);
-		
-		g.setFont(new Font("Arial", Font.PLAIN, 16));
+//		Graphics2D g2d = (Graphics2D) g;
+//		g2d.setStroke(new BasicStroke(5F));
+//		g2d.setColor(isPath ? Color.RED : Color.cyan);
+//		if (parent != null)
+//			Utils.drawArrow(g, parent.tile.xRenderPos + (parent.tile.getWidth() / 2),
+//					parent.tile.yRenderPos + (parent.tile.getHeight() / 2), tile.xRenderPos + (tile.getWidth() / 2),
+//					tile.yRenderPos + (tile.getHeight() / 2), 10);
+//		
+//		g.setFont(new Font("Arial", Font.PLAIN, 16));
 		//g.setColor(Color.black);
 		//g.drawString("" + (int) p.calcHCost(this), tile.xRenderPos + 1, tile.yRenderPos + 18);
-		g.setColor(Color.white);
-		g.drawString("" + (int) getFinalCost(), tile.xRenderPos + 1, tile.yRenderPos + 18);
+		//g.setColor(Color.white);
+		//g.drawString("" + (int) getFinalCost(), tile.xRenderPos + 1, tile.yRenderPos + 18);
 		
 		// g2d.drawLine(parent.tile.xRenderPos + (parent.tile.getWidth() / 2),
 		// parent.tile.yRenderPos + (parent.tile.getHeight() / 2), tile.xRenderPos +
