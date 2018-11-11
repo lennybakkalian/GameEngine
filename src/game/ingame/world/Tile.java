@@ -73,7 +73,7 @@ public class Tile extends WorldObject {
 	}
 
 	public Rectangle getRect() {
-		return new Rectangle(getX(), getY(), width, height);
+		return new Rectangle((int) getX(), (int) getY(), width, height);
 	}
 
 	public Rectangle getRenderRect() {

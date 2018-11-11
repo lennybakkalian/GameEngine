@@ -25,8 +25,8 @@ public class WorldObject extends GameObject {
 	@Override
 	public void tick() {
 		if (handler.getWorld() != null) {
-			xRenderPos = getX() - handler.getWorld().getCamera().getxOffset();
-			yRenderPos = getY() - handler.getWorld().getCamera().getyOffset();
+			xRenderPos = (int) getX() - handler.getWorld().getCamera().getxOffset();
+			yRenderPos = (int) getY() - handler.getWorld().getCamera().getyOffset();
 		}
 	}
 
@@ -34,18 +34,13 @@ public class WorldObject extends GameObject {
 	public void render(Graphics g) {
 		if (!debugRender)
 			return;
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setStroke(new BasicStroke(1F));
 		Rectangle renderCollisionBox = new Rectangle(0, 0, 0, 0);
 		renderCollisionBox.x = xRenderPos + collisionBox.x;
 		renderCollisionBox.y = yRenderPos + collisionBox.y;
 		renderCollisionBox.width = collisionBox.width;
 		renderCollisionBox.height = collisionBox.height;
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setStroke(new BasicStroke(5F));
-		g2d.setColor(Color.red);
-		Utils.renderRect(g, renderCollisionBox);
-		g2d.setStroke(new BasicStroke(2F));
-		g.drawLine(xRenderPos, 0, xRenderPos, yRenderPos);
-		g.drawLine(0, yRenderPos, xRenderPos, yRenderPos);
 		super.render(g);
 	}
 

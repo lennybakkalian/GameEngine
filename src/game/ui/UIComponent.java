@@ -178,11 +178,11 @@ public class UIComponent extends GameObject {
 		this.ignoreLayers = ignoreLayers;
 	}
 
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 
-	public int getY() {
+	public double getY() {
 		return y;
 	}
 

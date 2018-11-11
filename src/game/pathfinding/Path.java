@@ -2,11 +2,10 @@ package game.pathfinding;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -71,6 +70,18 @@ public class Path extends WorldObject {
 		open.add(start);
 		started = System.currentTimeMillis();
 	}
+	
+	public World getWorld() {
+		return world;
+	}
+	
+	public boolean isDone() {
+		return done;
+	}
+	
+	public ArrayList<Node> getShortestPath() {
+		return shortestPath;
+	}
 
 	public void findPath() {
 		if (done)
@@ -84,6 +95,8 @@ public class Path extends WorldObject {
 		open.remove(current);
 		closed.add(current);
 		if (current.type == NodeType.END) {
+			System.out.println("\n\n\n");
+			System.out.println((System.currentTimeMillis() - started) + "ms astar finnished");
 			done = true;
 			// reconstuct path
 			current.isPath = true;
@@ -94,7 +107,26 @@ public class Path extends WorldObject {
 				reconstruct.isPath = true;
 				reconstruct = reconstruct.parent;
 			}
+			System.out.println((System.currentTimeMillis() - started) + "ms reconstruct finnished");
 			// try to search shortest path with lineOfSight
+			shortestPath.clear();
+			shortestPath.add(start);
+			Node currentNode = null;
+			// for loop from start to end
+			for (int i = foundedPath.size() - 1; i >= 0; i--) {
+				currentNode = foundedPath.get(i);
+				// for loop from end to currentNode
+				for (int i2 = 0; i2 < foundedPath.size(); i2++) {
+					Node checkNode = foundedPath.get(i2);
+					if (world.canSeeOtherNode(currentNode, checkNode)) {
+						// add last tile to shortestpath
+						shortestPath.add(checkNode);
+						i = i2;
+						break;
+					}
+				}
+			}
+			System.out.println((System.currentTimeMillis() - started) + "ms lineofsight finnished");
 			return;
 		}
 
@@ -179,6 +211,7 @@ public class Path extends WorldObject {
 			// Utils.fillRect(g, c.tile.getRenderRect());
 			foundedPath.get(i).render(g, this);
 		}
+
 		// render start
 		g2d.setColor(Color.cyan);
 		start.render(g2d, this);
@@ -187,36 +220,12 @@ public class Path extends WorldObject {
 		for (Tile t : world.getTiles()) {
 			g2d.setStroke(new BasicStroke(1F));
 			g.setColor(Color.BLACK);
-			Utils.renderRect(g, t.getRenderRect());
+			// render tile borders
+			//Utils.renderRect(g, t.getRenderRect());
 		}
-
-		shortestPath.clear();
-		shortestPath.add(start);
-		Node lastSavedNode = null, currentNode = null;
-		g2d.setStroke(new BasicStroke(5F));
-		for (int i = foundedPath.size() - 1; i >= 0; i--) {
-			currentNode = foundedPath.get(i);
-			if (lastSavedNode == null)
-				lastSavedNode = currentNode;
-			if (!world.canSeeOtherNode(g, lastSavedNode, currentNode) && i <= foundedPath.size()) {
-				// add last tile to shortestpath
-				shortestPath.add(foundedPath.get(i + 1));
-				lastSavedNode = currentNode;
-			}
-		}
-		// bug?
-		if (!shortestPath.contains(currentNode) && currentNode != null)
-			shortestPath.add(currentNode);
-		shortestPath.add(end);
-
-		g2d.setColor(Color.white);
 		for (int i = 0; i < shortestPath.size(); i++) {
-			// Utils.fillRect(g2d, shortestPath.get(i).tile.getRenderRect());
-			// if (i > 0)
-			// g.drawLine(shortestPath.get(i - 1).tile.xRenderPos, shortestPath.get(i -
-			// 1).tile.yRenderPos,
-			// shortestPath.get(i).tile.xRenderPos, shortestPath.get(i).tile.yRenderPos);
 			g2d.setStroke(new BasicStroke(2F));
+			g2d.setColor(Color.white);
 			if (i > 0) {
 				Node lastNode = shortestPath.get(i - 1);
 				Node thisNode = shortestPath.get(i);
@@ -224,11 +233,14 @@ public class Path extends WorldObject {
 						lastNode.tile.yRenderPos + lastNode.tile.getHeight() / 2,
 						thisNode.tile.xRenderPos + thisNode.tile.getWidth() / 2,
 						thisNode.tile.yRenderPos + thisNode.tile.getHeight() / 2);
+				g.setFont(new Font("Arial", Font.PLAIN, 20));
+				g.drawString(i + "", thisNode.tile.xRenderPos, thisNode.tile.yRenderPos);
 			}
 		}
 
 		Handler.debugInfoList.put(10, "path: start: " + startX + "x" + startY + "  end: " + endX + "x" + endY);
 		Handler.debugInfoList.put(11, "last path searching for " + time + "ms");
+
 		super.render(g);
 	}
 

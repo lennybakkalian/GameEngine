@@ -24,8 +24,8 @@ public class Node {
 	public boolean isPath = false;
 
 	public Node(Tile t, NodeType type, Node parent) {
-		this.x = t.getX() / t.getWidth();
-		this.y = t.getY() / t.getHeight();
+		this.x = (int) t.getX() / t.getWidth();
+		this.y = (int) t.getY() / t.getHeight();
 		this.tile = t;
 		this.type = type;
 		this.parent = parent;
